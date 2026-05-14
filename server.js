@@ -10,7 +10,7 @@ app.use(express.json());
 
 // ================= DB CONNECTION =================
 const db = mysql.createConnection({
-  host: "srv1234.hstgr.io",
+  host: "localhost",
   user: "u418676780_geepee",
   password: "Geepee@8790",
   database: "u418676780_geepee"
