@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const mysql = require("mysql2");
+const { Pool } = require("pg");
 const nodemailer = require("nodemailer");
 
 const app = express();
@@ -9,21 +9,16 @@ app.use(cors());
 app.use(express.json());
 
 // ================= DB CONNECTION =================
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "u418676780_geepee",
-  password: "Geepee@8790",
-  database: "u418676780_geepee"
-});
-
-db.connect(err => {
-  if (err) {
-    console.log("❌ DB Connection Failed", err);
-  } else {
-    console.log("✅ MySQL Connected");
+const db = new Pool({
+  connectionString: "postgresql://neondb_owner:npg_7JUFBAXrmI9q@ep-empty-sea-aopo50g5.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=req",
+  ssl: {
+    rejectUnauthorized: false
   }
 });
 
+db.connect()
+  .then(() => console.log("✅ Neon PostgreSQL Connected"))
+  .catch(err => console.log("❌ DB Error:", err));
 // ================= EMAIL TRANSPORTER =================
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -46,14 +41,12 @@ app.post("/contact", (req, res) => {
 
   console.log(req.body);
 
-  const { name, email, phone, message } = req.body;
+ const sql = `
+  INSERT INTO enquiries (name, email, phone, message)
+  VALUES ($1, $2, $3, $4)
+`;
 
-  const sql = `
-    INSERT INTO enquiries (name, email, phone, message)
-    VALUES (?, ?, ?, ?)
-  `;
-
-  db.query(sql, [name, email, phone, message], async (err, result) => {
+db.query(sql, [name, email, phone, message], async (err, result) => {
 
     if (err) {
       console.log("❌ SQL Error:", err);
@@ -121,7 +114,7 @@ app.delete("/enquiries/:id", (req, res) => {
 
   const id = req.params.id;
 
-  const sql = "DELETE FROM enquiries WHERE id = ?";
+  const sql = "DELETE FROM enquiries WHERE id = $1";
 
   db.query(sql, [id], (err, result) => {
 
