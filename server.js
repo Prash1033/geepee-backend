@@ -40,7 +40,7 @@ app.post("/contact", (req, res) => {
   console.log("📩 CONTACT ROUTE HIT");
 
   console.log(req.body);
-
+ const { name, email, phone, message } = req.body;
  const sql = `
   INSERT INTO enquiries (name, email, phone, message)
   VALUES ($1, $2, $3, $4)
