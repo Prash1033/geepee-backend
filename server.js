@@ -42,6 +42,10 @@ app.get("/", (req, res) => {
 // ================= SAVE CONTACT FORM =================
 app.post("/contact", (req, res) => {
 
+  console.log("📩 CONTACT ROUTE HIT");
+
+  console.log(req.body);
+
   const { name, email, phone, message } = req.body;
 
   const sql = `
